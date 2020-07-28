@@ -3,7 +3,7 @@ import React from 'react';
 class CalcButton extends React.Component
 {
     onButtonClicked = (event) => {
-        this.props.onClick(event);
+           this.props.onClick(event);
     }
 
     render()

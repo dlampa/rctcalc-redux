@@ -12,12 +12,84 @@ class App extends React.Component
     super(props);
 
     this.state = {
-      calcInput: ""
+      calcInput: "",
+      firstNumber: "",
+      secondNumber: "",
+      calcOper: ""
     };
     
   }
 
+  calcResult() {
+    // Change to manual calculation without eval
+    let calcResult = eval(this.state.firstNumber + this.state.calcOper + this.state.secondNumber);
+
+    this.setState({
+      calcInput: calcResult,
+      firstNumber: calcResult,
+      calcOper: "",
+      secondNumber: ""
+    });
+
+
+  }
+
   onInput = (event) => {
+    // Discern what was pressed based on the className of the button pressed
+    switch (event.target.className)
+    {
+      case "btnNumbers":
+        {
+          let newInput = event.target.innerText;
+          this.setState({ [this.state.firstNumber !== "" ? "secondNumber" : "firstNumber"]: newInput, calcInput: newInput })
+
+          break;
+        }
+      case "btnOpers":
+        {
+          console.log("oper");
+          // Get the new operator
+          let newOperator = event.target.innerText;
+          
+          // Check if we already have the first number defined
+          if (this.state.secondNumber !== "" && newOperator !== "=") {
+         
+            // Perform calculation first
+            this.calcResult();
+
+            // Assign the new operator
+            this.setState({ calcOper: newOperator });
+            
+            // Wait for next input
+          }
+          else if (newOperator === "=")
+          {
+            // Perform the calculation
+            this.calcResult();
+
+          } else {
+            this.setState({ calcOper: newOperator });
+          }
+          
+          break;
+        }
+
+      case "btnCalcFunc":
+        {
+          // Handle user pressing "C" - clears firstNumber and secondNumber
+          this.setState({
+            firstNumber: "",
+            secondNumber: "",
+            calcInput: "",
+            calcOper: ""
+          })
+          break;
+        }
+      default:
+    }
+
+
+   /*
     // Capture the value from the target's <button>'s innerText
     let newInput = event.target.innerText;
     let newCalcInput;
@@ -29,13 +101,18 @@ class App extends React.Component
         newCalcInput = eval(this.state.calcInput);
         break;
       }
-      default:  
+    case "C":
+      {
+          newCalcInput = "";
+          break;
+      }
+    default:  
       {
         newCalcInput = this.state.calcInput + newInput;
       }
     }
     this.setState({ calcInput: newCalcInput });
-    
+    */
   }
 
   updateState = (key, value) => {
