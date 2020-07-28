@@ -6,7 +6,7 @@ import App from './App';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App onKeyDown={(event) => console.log(event)} />
   </React.StrictMode>,
   document.getElementById('root')
 );

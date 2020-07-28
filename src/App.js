@@ -1,10 +1,11 @@
 import React from 'react';
+import './reset.css';
 import './App.css';
 import CalcButton from './CalcButton';
 
+
 let numChars = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 let opChars = ["+", "-", "*", "/", "="];
-
 
 class App extends React.Component 
 {
@@ -25,8 +26,9 @@ class App extends React.Component
     let calcResult;
     let firstNumber = Number.parseFloat(this.state.firstNumber);
     let secondNumber = Number.parseFloat(this.state.secondNumber);
+    let lastOper = this.state.calcOper;
 
-    switch (this.state.calcOper) {
+    switch (lastOper) {
       case "+":
         calcResult = firstNumber + secondNumber;
         break;
@@ -42,6 +44,10 @@ class App extends React.Component
         break;
       default:
     }
+
+    // Round to 
+    // https://stackoverflow.com/a/12830454/12802214
+    calcResult = Math.round((calcResult + Number.EPSILON) * 1000000000) / 1000000000;
 
     this.setState({
       calcInput: calcResult,
@@ -59,36 +65,78 @@ class App extends React.Component
     {
       case "btnNumbers":
         {
-          let newInput = (this.state.calcInput === "0") ? event.target.innerText : this.state.calcInput.toString() + event.target.innerText.toString();
-          this.setState({ [this.state.calcOper !== "" ? "secondNumber" : "firstNumber"]: newInput, calcInput: newInput })
+          let newInput;
+
+          // Handle different possibilities for data input: 
+          // 1. Starts off from 0 as displayed (could be firstNumber = blank too)
+          // 2. If both the operator is set and secondNumber is blank
+          // 3. If Operator is blank
+          if (this.state.calcInput === "0"
+            ||
+            (this.state.calcOper !== "" && this.state.secondNumber === "")
+            ||
+            (this.state.calcOper === "" && this.state.firstNumber === this.state.secondNumber && this.state.firstNumber === "" && !this.state.calcInput.toString().includes(".")))
+          {
+            newInput = event.target.innerText.toString();
+          } else if ((this.state.calcInput.length + 1) <= 10)
+          {
+            newInput = this.state.calcInput.toString() + event.target.innerText.toString();
+          }
+          
+          // Prevent coma
+          if (newInput != null) {
+            // Change between storing first or second Number in the state object
+            this.setState({ [this.state.calcOper !== "" ? "secondNumber" : "firstNumber"]: newInput, calcInput: newInput });
+          }
 
           break;
         }
       case "btnOpers":
         {
-          // Get the new operator
+          // Get the new operator, and save the old one
           let newOperator = event.target.innerText;
-          
-          // Check if we already have the first number defined
-          if (this.state.secondNumber !== "" && newOperator !== "=") {
-         
-            // Perform calculation first
-            this.calcResult();
+          let lastOperator = this.state.calcOper;
 
-            // Assign the new operator
-            this.setState({ calcOper: newOperator, calcInput: "" });
-            
-            // Wait for next input
+          // This entire section needs a rewrite to streamline the code.
+
+          // Cater for change of operator mid-operation (only change operator)
+          if (lastOperator !== newOperator) {
+            // Apply new operator
+            this.setState({ calcOper: newOperator });
           }
-          else if (newOperator === "=")
-          {
-            if (this.state.calcOper !== "") {
-              // Perform the calculation
-              this.calcResult();
+
+          if (this.state.firstNumber !== "") {
+          
+            // Cater for missing second number, and the user presses = (reset operator, keep value of first number on screen)
+            if (this.state.secondNumber === "" && newOperator === "=") {
+              this.setState({ calcOper: "", calcInput: this.state.firstNumber });
             }
 
-          } else {
-            this.setState({ calcOper: newOperator, calcInput: "0" });
+            // Cater for user entered the second number, and the operator is = (perform calc)
+            if (this.state.secondNumber !== "" && newOperator === "=") {
+              // Perform calculation
+              this.calcResult();
+
+              // This ensures that on next entry we reset
+              this.setState({ firstNumber: "" });
+            }
+
+            // Cater for user entering the second number, and the operator is not = (perform calc) 
+            if (this.state.secondNumber !== "" && newOperator !== "=") {
+         
+              // Perform calculation first
+              this.calcResult();
+
+              // Assign the new operator
+              this.setState({ calcOper: newOperator });
+                        
+              // Wait for next input... 
+            }
+          }
+
+          // Reuse last value after user has completed the previous calc by pressing = (matches the conditions of state variable when that occurs)
+          if (this.state.firstNumber === "" && this.state.secondNumber === "" && this.state.calcInput !== "" && newOperator !== "=") {
+            this.setState({ firstNumber: this.state.calcInput });
           }
           
           break;
@@ -99,8 +147,8 @@ class App extends React.Component
           let calcFunc = event.target.innerText;
           switch (calcFunc)
           {
-            case "C":
-              // Handle user pressing "C" - clears firstNumber and secondNumber
+            case "AC":
+              // Handle user pressing "AC" - clears firstNumber and secondNumber
               this.setState({
                 firstNumber: "",
                 secondNumber: "",
@@ -108,65 +156,71 @@ class App extends React.Component
                 calcOper: ""
               });
               break;
+            
+            case "C":
+              // Handle user pressing "C" - clears only currentInput
+              this.setState({
+                calcInput: "0",
+              });
+              break;
+            
             case ".":
-              if (!(this.state.calcInput.indexOf(".") > -1)) {
+              /* If there is a dot already in, do nothing. If the calcInput is string (which means it's not a result of the calc, but an input), proceed
+                 This is really WEAK. There should have been another state parameter to track whether or not user is looking at a result,
+                 independent of the vartype */
+              
+              if (!(this.state.calcInput.toString().indexOf(".") > -1) && typeof(this.state.calcInput)=="string") {
+               
                 this.setState({
                   calcInput: this.state.calcInput + "."
                 });
               }
               break;
-            default:
+            case "_":
+              let initialEntry = this.state.calcInput;
+              let newEntry = initialEntry;
 
+
+              if (typeof (initialEntry) == "string") {
+                if (initialEntry[0] === "-") {
+                  newEntry = initialEntry.substr(1);
+                } else {
+                  newEntry = "-" + initialEntry;
+                }
+                
+                // Figure out where to place the new positive/negative value
+                this.setState({
+                  calcInput: newEntry,
+                  [(this.state.firstNumber === "" || this.state.calcOper === "") ? "firstNumber" : "secondNumber"]: newEntry
+                });
+              }
+              break;
+            default:
+              /* Nothing */
           }
           
           break;
         }
       default:
+        /* Nothing */
     }
-
-
-   /*
-    // Capture the value from the target's <button>'s innerText
-    let newInput = event.target.innerText;
-    let newCalcInput;
-    switch (newInput)
-    {
-    case "=":
-      {
-        // Process the calculation and display the result
-        newCalcInput = eval(this.state.calcInput);
-        break;
-      }
-    case "C":
-      {
-          newCalcInput = "";
-          break;
-      }
-    default:  
-      {
-        newCalcInput = this.state.calcInput + newInput;
-      }
-    }
-    this.setState({ calcInput: newCalcInput });
-    */
-  }
-
-  updateState = (key, value) => {
-    this.setState({ [key]: value });
   }
 
   render()
   {
+    // Needs key added to the .map method to prevent errors
     return (
       <>
       <div id="calcDisplay">
           <input type="text" id="calcOutput" value={this.state.calcInput} readOnly={true} />
       </div>
-      <div id="calcControls">
-          {numChars.map(numChar => <CalcButton renderVal={numChar} className="btnNumbers" onClick={this.onInput} />)}
-          {opChars.map(opChar => <CalcButton renderVal={opChar} className="btnOpers" onClick={this.onInput} />)}
+        <div id="calcControls">
+          {numChars.map((numChar, index) => <CalcButton key={index} renderVal={numChar} className="btnNumbers" onClick={this.onInput} />)}
+          {opChars.map((opChar, index) => <CalcButton key={index} renderVal={opChar} className="btnOpers" onClick={this.onInput} />)}
           {<CalcButton renderVal="." className="btnCalcFunc" onClick={this.onInput} />}
           {<CalcButton renderVal="C" className="btnCalcFunc" onClick={this.onInput} />}
+          {<CalcButton renderVal="_" className="btnCalcFunc" onClick={this.onInput} />}
+          {<CalcButton renderVal="AC" className="btnCalcFunc" onClick={this.onInput} />}
 
       </div>
       </>
@@ -176,5 +230,3 @@ class App extends React.Component
 }
 
 export default App;
-
-//onChange={(event) => this.updateState("calcInput", event.target.value)}
