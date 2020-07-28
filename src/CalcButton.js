@@ -9,7 +9,7 @@ class CalcButton extends React.Component
     render()
     {
         return (
-            <button id={"calcButton" + this.props.renderVal.toString()}
+            <button id={"calcButton" + (this.props.renderVal.toString() === "." ? "dot": this.props.renderVal.toString())}
                 className={this.props.className}
                 onClick={(event) => this.onButtonClicked(event)}>
                 {this.props.renderVal}

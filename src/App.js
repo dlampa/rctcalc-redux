@@ -12,7 +12,7 @@ class App extends React.Component
     super(props);
 
     this.state = {
-      calcInput: "",
+      calcInput: "0",
       firstNumber: "",
       secondNumber: "",
       calcOper: ""
@@ -22,7 +22,26 @@ class App extends React.Component
 
   calcResult() {
     // Change to manual calculation without eval
-    let calcResult = eval(this.state.firstNumber + this.state.calcOper + this.state.secondNumber);
+    let calcResult;
+    let firstNumber = Number.parseFloat(this.state.firstNumber);
+    let secondNumber = Number.parseFloat(this.state.secondNumber);
+
+    switch (this.state.calcOper) {
+      case "+":
+        calcResult = firstNumber + secondNumber;
+        break;
+      case "-":
+        calcResult = firstNumber - secondNumber;
+        break;
+      case "/":
+        // Insert div/0 checks here maybe?
+        calcResult = firstNumber / secondNumber;
+        break;
+      case "*":
+        calcResult = firstNumber * secondNumber;
+        break;
+      default:
+    }
 
     this.setState({
       calcInput: calcResult,
@@ -40,14 +59,13 @@ class App extends React.Component
     {
       case "btnNumbers":
         {
-          let newInput = event.target.innerText;
-          this.setState({ [this.state.firstNumber !== "" ? "secondNumber" : "firstNumber"]: newInput, calcInput: newInput })
+          let newInput = (this.state.calcInput === "0") ? event.target.innerText : this.state.calcInput.toString() + event.target.innerText.toString();
+          this.setState({ [this.state.calcOper !== "" ? "secondNumber" : "firstNumber"]: newInput, calcInput: newInput })
 
           break;
         }
       case "btnOpers":
         {
-          console.log("oper");
           // Get the new operator
           let newOperator = event.target.innerText;
           
@@ -58,17 +76,19 @@ class App extends React.Component
             this.calcResult();
 
             // Assign the new operator
-            this.setState({ calcOper: newOperator });
+            this.setState({ calcOper: newOperator, calcInput: "" });
             
             // Wait for next input
           }
           else if (newOperator === "=")
           {
-            // Perform the calculation
-            this.calcResult();
+            if (this.state.calcOper !== "") {
+              // Perform the calculation
+              this.calcResult();
+            }
 
           } else {
-            this.setState({ calcOper: newOperator });
+            this.setState({ calcOper: newOperator, calcInput: "0" });
           }
           
           break;
@@ -76,13 +96,29 @@ class App extends React.Component
 
       case "btnCalcFunc":
         {
-          // Handle user pressing "C" - clears firstNumber and secondNumber
-          this.setState({
-            firstNumber: "",
-            secondNumber: "",
-            calcInput: "",
-            calcOper: ""
-          })
+          let calcFunc = event.target.innerText;
+          switch (calcFunc)
+          {
+            case "C":
+              // Handle user pressing "C" - clears firstNumber and secondNumber
+              this.setState({
+                firstNumber: "",
+                secondNumber: "",
+                calcInput: "0",
+                calcOper: ""
+              });
+              break;
+            case ".":
+              if (!(this.state.calcInput.indexOf(".") > -1)) {
+                this.setState({
+                  calcInput: this.state.calcInput + "."
+                });
+              }
+              break;
+            default:
+
+          }
+          
           break;
         }
       default:
@@ -124,12 +160,14 @@ class App extends React.Component
     return (
       <>
       <div id="calcDisplay">
-        <input type="text" id="calcOutput" value={this.state.calcInput} onChange={(event) => this.updateState("calcInput", event.target.value)} />
+          <input type="text" id="calcOutput" value={this.state.calcInput} readOnly={true} />
       </div>
       <div id="calcControls">
-          {numChars.map(numChar => <CalcButton renderVal={numChar} className="btnNumbers" onClick={this.onInput}/>)}
+          {numChars.map(numChar => <CalcButton renderVal={numChar} className="btnNumbers" onClick={this.onInput} />)}
           {opChars.map(opChar => <CalcButton renderVal={opChar} className="btnOpers" onClick={this.onInput} />)}
+          {<CalcButton renderVal="." className="btnCalcFunc" onClick={this.onInput} />}
           {<CalcButton renderVal="C" className="btnCalcFunc" onClick={this.onInput} />}
+
       </div>
       </>
     );
@@ -138,3 +176,5 @@ class App extends React.Component
 }
 
 export default App;
+
+//onChange={(event) => this.updateState("calcInput", event.target.value)}
