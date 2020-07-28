@@ -18,7 +18,24 @@ class App extends React.Component
   }
 
   onInput = (event) => {
-    this.setState({calcInput: event.target.innerText})
+    // Capture the value from the target's <button>'s innerText
+    let newInput = event.target.innerText;
+    let newCalcInput;
+    switch (newInput)
+    {
+    case "=":
+      {
+        // Process the calculation and display the result
+        newCalcInput = eval(this.state.calcInput);
+        break;
+      }
+      default:  
+      {
+        newCalcInput = this.state.calcInput + newInput;
+      }
+    }
+    this.setState({ calcInput: newCalcInput });
+    
   }
 
   updateState = (key, value) => {
@@ -34,7 +51,8 @@ class App extends React.Component
       </div>
       <div id="calcControls">
           {numChars.map(numChar => <CalcButton renderVal={numChar} className="btnNumbers" onClick={this.onInput}/>)}
-        {opChars.map(opChar => <CalcButton renderVal={opChar} className="btnOpers" /> )}
+          {opChars.map(opChar => <CalcButton renderVal={opChar} className="btnOpers" onClick={this.onInput} />)}
+          {<CalcButton renderVal="C" className="btnCalcFunc" onClick={this.onInput} />}
       </div>
       </>
     );
