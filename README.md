@@ -1,9 +1,9 @@
-# React Calculator
+# React Calculator with Redux and React-Router implementation
 
 TECHCareers assignment - React Calculator
 
 This assignment is meant to challenge your knowledge of state, prop and element rendering in React. 
-React is currently one of the most popular and sought after front end technology at the moment, and having skills with it will greatly increase your employability.
+React is currently one of the most popular and sought after front end technology at the moment, and having skills with it will greatly increase your employability. Redux is often used as a companion to React, and is favored for storing information over using state. React Router is used to create multiple pages in React, and is often used to keep applications and web pages organized.
 
 
 ## Requirements
@@ -13,6 +13,11 @@ React is currently one of the most popular and sought after front end technology
 - Create a select (drop down box) which allows the user to choose what operation to apply to the two numeric fields - your operations must include addition, subtraction, multiplication, and division
 
 - Output to the user the result of the calculation
+
+- Store and output a list of prior calculations the user has done in a Redux store
+
+- Use React Router to have a page for the calculator and a page for prior calculations
+
 
 ## Challenges
 
