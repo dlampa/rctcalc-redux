@@ -229,11 +229,6 @@ class App extends React.Component
           {<CalcButton renderVal="_" className="btnCalcFunc" onClick={this.onInput} />}
           {<CalcButton renderVal="AC" className="btnCalcFunc" onClick={this.onInput} />}
         </div>
-        <div id="calcHistory">
-          {/* Temporarily display the history until we set up React Router */}
-          <h3>Calc history:</h3>
-          <ul> {this.props.calcHistory.map((calcHistoryItem, index) => <li>{calcHistoryItem}</li>)} </ul>
-        </div>
       </>
     );
   }
