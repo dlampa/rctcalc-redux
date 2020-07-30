@@ -16,7 +16,6 @@ class App extends React.Component
 
     // Local state will stay
     this.state = {
-      calcId: "",
       calcInput: "0",
       firstNumber: "",
       secondNumber: "",
@@ -49,7 +48,7 @@ class App extends React.Component
       default:
     }
 
-    // Round to 
+    // Rounding to 9th decimal
     // https://stackoverflow.com/a/12830454/12802214
     calcResult = Math.round((calcResult + Number.EPSILON) * 1000000000) / 1000000000;
 
