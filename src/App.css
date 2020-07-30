@@ -1,3 +1,6 @@
+* {
+  box-sizing: border-box;
+}
 body {
   background-color: black;
   font-family: 'Arial', sans-serif;
@@ -21,11 +24,42 @@ button:hover {
   transition: all 0.5s ease-in;
 }
 
-#calcHistory {
-  grid-row: 4 / 5;
+nav {
+  grid-row: 1 / 2;
   grid-column: 2 / 3;
   margin: 10px 0;
+  justify-self: start;
+  align-content: flex-start;
+}
+
+nav a {
+  border-radius: 4px 4px 0 0;
+  border: 1px solid rgba(112, 128, 144, 0.493);
+  /* margin: 0 10px; */
+  padding: 8px;
+  text-decoration: none;
   color: white;
+}
+
+nav a:hover, .activeLink {
+  border-top: 3px solid red;
+  transition: all 0.2s ease-in;
+}
+
+.activeLink {
+  border-top: 3px solid rgba(218, 223, 238, 0.493);
+}
+
+#calcHistory {
+  grid-row: 2 / 3;
+  grid-column: 2 / 3;
+  min-width: 204px;
+  min-height: Calc(250px + 74.4px);
+  color: white;
+  padding: 20px 0;
+  justify-self: start;
+  align-self: start;
+  background-color: rgba(112, 128, 144, 0.493);
 }
 
 #calcHistory ul {
@@ -35,22 +69,21 @@ button:hover {
 }
 
 #calcHistory ul li {
-  margin: 3px 0;
+  margin: 10px 0;
+  border-radius: 6px;
+  background-color: grey;
+  padding: 5px;
+  width: fit-content;
+  margin: 10px 0 10px 25px;  
+  font-family: 'Consolas';
 }
 
-.btnOpers {
-  grid-column: 4 / 5;
-  background-color: orange;
-  color: black;
+#calcHistory h3 {
+  margin: 0 5px;
 }
-
-.App {
-  text-align: center;
-}
-
 
 #calcDisplay {
-  grid-row: 1 / 2;
+  grid-row: 2 / 3;
   grid-column: 2 / 3;
   justify-items: center;
   justify-content: center;
@@ -73,14 +106,13 @@ button:hover {
 
 #calcControls {
   display: grid;
-  grid-row: 2 / 3;
+  grid-row: 3 / 4;
   grid-column: 2 / 3;
   grid-template-rows: repeat(4, auto);
   grid-template-columns: repeat(4, auto);
   justify-items: center;
   justify-content: center;
   background-color: rgba(112, 128, 144, 0.493);
-  /* border-radius: 10px; */
   border: none;
   padding: 10px;
 }
@@ -128,10 +160,19 @@ button:hover {
 
 #root {
   display: grid;
-  grid-template-rows: repeat(2, auto);
+  grid-template-rows: repeat(3, auto);
   grid-template-columns: auto min-content auto;
   justify-items: center;
   width: 100%;
   margin: 25px 0;
 }
 
+.btnOpers {
+  grid-column: 4 / 5;
+  background-color: orange;
+  color: black;
+}
+
+.App {
+  text-align: center;
+}

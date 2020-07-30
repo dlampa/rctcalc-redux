@@ -26,7 +26,7 @@ const Root = (store) => (
   <Provider store={store.store}>
     <Router>
       <SiteNav />
-      <Route path="/" exact component={App} />
+      <Route path="/" exact component={App}/>
       <Route path="/history" component={CalcHistory} />
     </Router>
   </Provider>

@@ -5,12 +5,12 @@ class CalcHistory extends React.Component {
     render()
     {
         return (
-            <>
-                <h3>Calc history:</h3>
+            <div id="calcHistory">
+                <h3>Calc history</h3>
                 <ul>
                    {this.props.calcHistory.map((calcHistoryItem, index) => <li>{calcHistoryItem}</li>)}
                 </ul>
-            </>
+            </div>
         );
     }
 }
