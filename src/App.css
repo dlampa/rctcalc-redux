@@ -21,6 +21,23 @@ button:hover {
   transition: all 0.5s ease-in;
 }
 
+#calcHistory {
+  grid-row: 4 / 5;
+  grid-column: 2 / 3;
+  margin: 10px 0;
+  color: white;
+}
+
+#calcHistory ul {
+  margin: 10px 0;
+  font-size: smaller;
+  list-style: decimal;
+}
+
+#calcHistory ul li {
+  margin: 3px 0;
+}
+
 .btnOpers {
   grid-column: 4 / 5;
   background-color: orange;

@@ -1,6 +1,8 @@
 import React from 'react';
 import './reset.css';
 import './App.css';
+import { connect } from 'react-redux';
+import addToCalcHistory from './actions';
 import CalcButton from './CalcButton';
 
 
@@ -12,7 +14,9 @@ class App extends React.Component
   constructor(props) {
     super(props);
 
+    // Local state will stay
     this.state = {
+      calcId: "",
       calcInput: "0",
       firstNumber: "",
       secondNumber: "",
@@ -48,6 +52,9 @@ class App extends React.Component
     // Round to 
     // https://stackoverflow.com/a/12830454/12802214
     calcResult = Math.round((calcResult + Number.EPSILON) * 1000000000) / 1000000000;
+
+    // Push calculation to history
+    this.props.dispatch(addToCalcHistory(`${this.state.firstNumber.toString()} ${this.state.calcOper} ${this.state.secondNumber.toString()} = ${calcResult.toString()}`));
 
     this.setState({
       calcInput: calcResult,
@@ -211,9 +218,9 @@ class App extends React.Component
     // Needs key added to the .map method to prevent errors
     return (
       <>
-      <div id="calcDisplay">
-          <input type="text" id="calcOutput" value={this.state.calcInput} readOnly={true} />
-      </div>
+        <div id="calcDisplay">
+            <input type="text" id="calcOutput" value={this.state.calcInput} readOnly={true} />
+        </div>
         <div id="calcControls">
           {numChars.map((numChar, index) => <CalcButton key={index} renderVal={numChar} className="btnNumbers" onClick={this.onInput} />)}
           {opChars.map((opChar, index) => <CalcButton key={index} renderVal={opChar} className="btnOpers" onClick={this.onInput} />)}
@@ -221,12 +228,18 @@ class App extends React.Component
           {<CalcButton renderVal="C" className="btnCalcFunc" onClick={this.onInput} />}
           {<CalcButton renderVal="_" className="btnCalcFunc" onClick={this.onInput} />}
           {<CalcButton renderVal="AC" className="btnCalcFunc" onClick={this.onInput} />}
-
-      </div>
+        </div>
+        <div id="calcHistory">
+          {/* Temporarily display the history until we set up React Router */}
+          <h3>Calc history:</h3>
+          <ul> {this.props.calcHistory.map((calcHistoryItem, index) => <li>{calcHistoryItem}</li>)} </ul>
+        </div>
       </>
     );
   }
 
 }
 
-export default App;
+export default connect(
+  state => { return { calcHistory: state }}
+)(App);
